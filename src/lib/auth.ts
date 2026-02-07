@@ -1,6 +1,7 @@
 import type { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
+import prisma from './prisma';
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -15,28 +16,33 @@ export const authOptions: NextAuthOptions = {
                     return null;
                 }
 
-                const adminEmail = process.env.ADMIN_EMAIL;
-                const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
+                try {
+                    // データベースから管理者ユーザーを検索
+                    const adminUser = await prisma.adminUser.findUnique({
+                        where: { email: credentials.email },
+                    });
 
-                if (!adminEmail || !adminPasswordHash) {
-                    console.error('Admin credentials not configured');
+                    if (!adminUser) {
+                        console.log('Admin user not found:', credentials.email);
+                        return null;
+                    }
+
+                    // パスワードを検証
+                    const isValid = await bcrypt.compare(credentials.password, adminUser.passwordHash);
+                    if (!isValid) {
+                        console.log('Invalid password for:', credentials.email);
+                        return null;
+                    }
+
+                    return {
+                        id: adminUser.id,
+                        email: adminUser.email,
+                        name: 'Admin',
+                    };
+                } catch (error) {
+                    console.error('Auth error:', error);
                     return null;
                 }
-
-                if (credentials.email !== adminEmail) {
-                    return null;
-                }
-
-                const isValid = await bcrypt.compare(credentials.password, adminPasswordHash);
-                if (!isValid) {
-                    return null;
-                }
-
-                return {
-                    id: '1',
-                    email: adminEmail,
-                    name: 'Admin',
-                };
             },
         }),
     ],
