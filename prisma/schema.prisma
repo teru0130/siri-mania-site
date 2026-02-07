@@ -1,0 +1,161 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ============================================
+// Categories
+// ============================================
+model Category {
+  id          Int      @id @default(autoincrement())
+  slug        String   @unique
+  name        String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  works       Work[]
+
+  @@map("categories")
+}
+
+// ============================================
+// Works (作品)
+// ============================================
+model Work {
+  id             Int          @id @default(autoincrement())
+  externalId     String       @unique @map("external_id")
+  categoryId     Int?         @map("category_id")
+  title          String
+  description    String?
+  thumbnailUrl   String?      @map("thumbnail_url")
+  affiliateUrl   String       @map("affiliate_url")
+  makerName      String?      @map("maker_name")
+  makerId        String?      @map("maker_id")
+  releaseDate    DateTime?    @map("release_date")
+  durationMinutes Int?        @map("duration_minutes")
+  actresses      Json?        // Array of actress names
+  isPublished    Boolean      @default(true) @map("is_published")
+  syncedAt       DateTime?    @map("synced_at")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  
+  category    Category?     @relation(fields: [categoryId], references: [id])
+  tags        WorkTag[]
+  metrics     WorkMetrics?
+  rankings    Ranking[]
+  clickEvents ClickEvent[]
+
+  @@map("works")
+}
+
+// ============================================
+// Tags
+// ============================================
+model Tag {
+  id           Int       @id @default(autoincrement())
+  slug         String    @unique
+  name         String
+  description  String?
+  displayOrder Int       @default(0) @map("display_order")
+  works        WorkTag[]
+
+  @@map("tags")
+}
+
+// ============================================
+// Work-Tag Junction
+// ============================================
+model WorkTag {
+  workId Int @map("work_id")
+  tagId  Int @map("tag_id")
+  work   Work @relation(fields: [workId], references: [id], onDelete: Cascade)
+  tag    Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([workId, tagId])
+  @@map("work_tags")
+}
+
+// ============================================
+// Work Metrics (スコア)
+// ============================================
+model WorkMetrics {
+  workId              Int      @id @map("work_id")
+  hipFocusScore       Float    @default(0) @map("hip_focus_score")
+  cameraFocusScore    Float    @default(0) @map("camera_focus_score")
+  outfitEmphasisScore Float    @default(0) @map("outfit_emphasis_score")
+  danceFitnessScore   Float    @default(0) @map("dance_fitness_score")
+  overallPickScore    Float    @default(0) @map("overall_pick_score")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+  
+  work Work @relation(fields: [workId], references: [id], onDelete: Cascade)
+
+  @@map("work_metrics")
+}
+
+// ============================================
+// Rankings
+// ============================================
+model Ranking {
+  id          Int      @id @default(autoincrement())
+  periodType  String   @map("period_type") // "weekly" or "monthly"
+  periodStart DateTime @map("period_start")
+  workId      Int      @map("work_id")
+  rank        Int
+  clickCount  Int      @default(0) @map("click_count")
+  createdAt   DateTime @default(now()) @map("created_at")
+  
+  work Work @relation(fields: [workId], references: [id], onDelete: Cascade)
+
+  @@unique([periodType, periodStart, workId])
+  @@map("rankings")
+}
+
+// ============================================
+// Click Events
+// ============================================
+model ClickEvent {
+  id          BigInt   @id @default(autoincrement())
+  pageType    String   @map("page_type")
+  pageId      Int?     @map("page_id")
+  linkType    String   @map("link_type")
+  destination String
+  userAgent   String?  @map("user_agent")
+  referer     String?
+  workId      Int?     @map("work_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  
+  work Work? @relation(fields: [workId], references: [id], onDelete: SetNull)
+
+  @@map("click_events")
+}
+
+// ============================================
+// API Cache
+// ============================================
+model ApiCache {
+  cacheKey  String   @id @map("cache_key")
+  data      Json
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("api_cache")
+}
+
+// ============================================
+// Admin Users
+// ============================================
+model AdminUser {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("admin_users")
+}
