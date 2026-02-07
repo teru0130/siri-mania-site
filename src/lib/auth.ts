@@ -1,7 +1,10 @@
 import type { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
-import prisma from './prisma';
+import { PrismaClient } from '@prisma/client';
+
+// Create a new Prisma client for auth to avoid connection issues
+const prisma = new PrismaClient();
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -12,25 +15,33 @@ export const authOptions: NextAuthOptions = {
                 password: { label: 'パスワード', type: 'password' },
             },
             async authorize(credentials) {
+                console.log('=== Auth attempt ===');
+                console.log('Email:', credentials?.email);
+
                 if (!credentials?.email || !credentials?.password) {
+                    console.log('Missing credentials');
                     return null;
                 }
 
                 try {
                     // データベースから管理者ユーザーを検索
+                    console.log('Searching for admin user...');
                     const adminUser = await prisma.adminUser.findUnique({
                         where: { email: credentials.email },
                     });
 
                     if (!adminUser) {
-                        console.log('Admin user not found:', credentials.email);
+                        console.log('Admin user not found');
                         return null;
                     }
 
+                    console.log('Admin user found:', adminUser.id);
+
                     // パスワードを検証
                     const isValid = await bcrypt.compare(credentials.password, adminUser.passwordHash);
+                    console.log('Password valid:', isValid);
+
                     if (!isValid) {
-                        console.log('Invalid password for:', credentials.email);
                         return null;
                     }
 
@@ -68,4 +79,5 @@ export const authOptions: NextAuthOptions = {
             return session;
         },
     },
+    debug: true,
 };
