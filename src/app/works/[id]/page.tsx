@@ -18,11 +18,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     });
 
     if (!work) {
-        return { title: '作品が見つかりません - 尻マニア' };
+        return { title: '作品が見つかりません - お尻マニア' };
     }
 
     return {
-        title: `${work.title} - 尻マニア`,
+        title: `${work.title} - お尻マニア`,
         description: work.description || `${work.title}のスコア詳細・比較情報`,
     };
 }

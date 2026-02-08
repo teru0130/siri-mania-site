@@ -8,8 +8,8 @@ import { AgeVerificationProvider } from "@/components/AgeVerification";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "尻マニア - お尻特化AV作品比較サイト",
-  description: "お尻・ヒップに特化したAV作品の比較サイト。",
+  title: "お尻マニア - お尻特化おすすめAV作品サイト",
+  description: "お尻・ヒップに特化したAV作品のおすすめサイト。",
   robots: {
     index: false, // R18サイトのため検索エンジンにインデックスさせない設定
     follow: true,

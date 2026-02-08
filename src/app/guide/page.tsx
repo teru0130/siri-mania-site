@@ -3,7 +3,7 @@ import { BookOpen, ArrowLeft, Star, Tag, TrendingUp, HelpCircle } from 'lucide-r
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'ガイド - 尻マニア',
+    title: 'ガイド - お尻マニア',
     description: 'サイトの使い方・スコアの見方ガイド',
 };
 
@@ -38,10 +38,10 @@ export default function GuidePage() {
                 <section className="rounded-xl bg-gray-800 border border-gray-700 p-4 sm:p-6">
                     <h2 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 flex items-center gap-2">
                         <HelpCircle className="h-5 w-5 text-pink-400" />
-                        尻マニアについて
+                        お尻マニアについて
                     </h2>
                     <p className="text-gray-300 leading-relaxed text-sm sm:text-base">
-                        尻マニアは、お尻・ヒップに特化したAV作品のおすすめサイトです。
+                        お尻マニアは、お尻・ヒップに特化したAV作品のおすすめサイトです。
                         あなたの好みに合った作品を効率的に見つけることができます。
                     </p>
                 </section>

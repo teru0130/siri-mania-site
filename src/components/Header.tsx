@@ -23,7 +23,7 @@ export default function Header() {
                         <span className="text-xl">🍑</span>
                     </div>
                     <span className="hidden font-bold text-xl bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent sm:inline-block">
-                        尻マニア
+                        お尻マニア
                     </span>
                 </Link>
 

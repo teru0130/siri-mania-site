@@ -14,11 +14,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const tag = await prisma.tag.findUnique({ where: { slug } });
 
     if (!tag) {
-        return { title: 'タグが見つかりません - 尻マニア' };
+        return { title: 'タグが見つかりません - お尻マニア' };
     }
 
     return {
-        title: `${tag.name} - タグ - 尻マニア`,
+        title: `${tag.name} - タグ - お尻マニア`,
         description: tag.description || `${tag.name}タグの作品一覧`,
     };
 }

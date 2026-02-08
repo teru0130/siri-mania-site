@@ -21,7 +21,7 @@ export default function Footer() {
                             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-pink-500 to-rose-600">
                                 <span className="text-lg">🍑</span>
                             </div>
-                            <span className="font-bold text-lg text-white">尻マニア</span>
+                            <span className="font-bold text-lg text-white">お尻マニア</span>
                         </div>
                         <p className="text-sm text-gray-400 leading-relaxed">
                             お尻・ヒップに特化したAV作品の比較サイト。
@@ -64,7 +64,7 @@ export default function Footer() {
                 {/* Bottom Bar */}
                 <div className="mt-8 pt-8 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-4">
                     <p className="text-sm text-gray-500">
-                        © {currentYear} 尻マニア. All rights reserved.
+                        © {currentYear} お尻マニア. All rights reserved.
                     </p>
                     <div className="flex items-center gap-4 text-sm text-gray-500">
                         <span className="px-3 py-1 rounded-full bg-rose-900/50 text-rose-300 border border-rose-800">

@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 
 export const metadata: Metadata = {
-    title: 'タグ一覧 - 尻マニア',
+    title: 'タグ一覧 - お尻マニア',
     description: 'お尻作品のタグ・カテゴリ一覧',
 };
 

@@ -3,8 +3,8 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: '免責事項 - 尻マニア',
-    description: '尻マニアの免責事項',
+    title: '免責事項 - お尻マニア',
+    description: 'お尻マニアの免責事項',
 };
 
 export default function DisclaimerPage() {

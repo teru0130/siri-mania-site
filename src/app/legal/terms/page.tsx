@@ -3,8 +3,8 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: '利用規約 - 尻マニア',
-    description: '尻マニアの利用規約',
+    title: '利用規約 - お尻マニア',
+    description: 'お尻マニアの利用規約',
 };
 
 export default function TermsPage() {
@@ -29,7 +29,7 @@ export default function TermsPage() {
                 <div className="rounded-xl bg-gray-800 border border-gray-700 p-6 space-y-6 text-gray-300">
                     <section>
                         <h2 className="text-lg font-bold text-white mb-2">第1条（適用）</h2>
-                        <p>本規約は、当サイト「尻マニア」（以下「当サイト」）の利用に関する条件を定めるものです。ユーザーは本規約に同意の上、当サイトをご利用ください。</p>
+                        <p>本規約は、当サイト「お尻マニア」（以下「当サイト」）の利用に関する条件を定めるものです。ユーザーは本規約に同意の上、当サイトをご利用ください。</p>
                     </section>
 
                     <section>

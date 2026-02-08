@@ -3,8 +3,8 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'プライバシーポリシー - 尻マニア',
-    description: '尻マニアのプライバシーポリシー',
+    title: 'プライバシーポリシー - お尻マニア',
+    description: 'お尻マニアのプライバシーポリシー',
 };
 
 export default function PrivacyPage() {

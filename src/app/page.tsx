@@ -65,7 +65,7 @@ export default async function HomePage() {
           <span>尻好きのためのお尻に特化したおすすめav作品サイト。</span>
         </div>
         <h1 className="text-4xl md:text-5xl font-bold mb-8 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-          <span className="gradient-text">尻マニア</span>
+          <span className="gradient-text">お尻マニア</span>
         </h1>
         <div className="flex flex-wrap justify-center gap-4 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
           <Link

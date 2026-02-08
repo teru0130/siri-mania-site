@@ -3,8 +3,8 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'お問い合わせ - 尻マニア',
-    description: '尻マニアへのお問い合わせ',
+    title: 'お問い合わせ - お尻マニア',
+    description: 'お尻マニアへのお問い合わせ',
 };
 
 export default function ContactPage() {
@@ -36,7 +36,7 @@ export default function ContactPage() {
                 <div className="space-y-2">
                     <h2 className="text-lg font-bold text-white">お問い合わせの際のお願い</h2>
                     <ul className="list-disc list-inside space-y-1 text-sm">
-                        <li>件名に「尻マニアについて」と明記してください</li>
+                        <li>件名に「お尻マニアについて」と明記してください</li>
                         <li>返信まで数日かかる場合があります</li>
                         <li>内容によっては返信できない場合があります</li>
                     </ul>

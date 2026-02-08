@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 
 export const metadata: Metadata = {
-    title: '週間ランキング - 尻マニア',
+    title: '週間ランキング - お尻マニア',
     description: '週間人気作品ランキング',
 };
 
