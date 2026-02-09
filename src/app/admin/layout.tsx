@@ -4,7 +4,7 @@ import { SessionProvider } from 'next-auth/react';
 import { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Package, Tag, TrendingUp, BarChart3, LogOut, Home } from 'lucide-react';
+import { LayoutDashboard, Package, Tag, TrendingUp, BarChart3, LogOut, Home, FileText } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 
 function AdminSidebar() {
@@ -13,6 +13,7 @@ function AdminSidebar() {
 
     const links = [
         { href: '/admin', label: 'ダッシュボード', icon: LayoutDashboard },
+        { href: '/admin/articles', label: '記事管理', icon: FileText },
         { href: '/admin/works', label: '作品管理', icon: Package },
         { href: '/admin/tags', label: 'タグ管理', icon: Tag },
         { href: '/admin/rankings', label: 'ランキング', icon: TrendingUp },
@@ -44,8 +45,8 @@ function AdminSidebar() {
                             key={link.href}
                             href={link.href}
                             className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${isActive
-                                    ? 'bg-pink-500/20 text-pink-400'
-                                    : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                                ? 'bg-pink-500/20 text-pink-400'
+                                : 'text-gray-400 hover:bg-gray-800 hover:text-white'
                                 }`}
                         >
                             <link.icon className="h-5 w-5" />
