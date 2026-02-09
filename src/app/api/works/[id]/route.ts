@@ -139,7 +139,6 @@ export async function DELETE(
         // 関連データを削除
         await prisma.workTag.deleteMany({ where: { workId } });
         await prisma.workMetrics.deleteMany({ where: { workId } });
-        await prisma.rankingEntry.deleteMany({ where: { workId } });
 
         await prisma.work.delete({
             where: { id: workId },
