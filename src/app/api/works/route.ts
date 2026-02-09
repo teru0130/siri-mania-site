@@ -79,7 +79,7 @@ export async function POST(request: Request) {
         }
 
         const body = await request.json();
-        const { title, description, thumbnailUrl, affiliateUrl, tagIds, isPublished, releaseDate } = body;
+        const { title, description, thumbnailUrl, affiliateUrl, tagIds, isPublished, releaseDate, metrics } = body;
 
         if (!title) {
             return NextResponse.json(
@@ -110,10 +110,15 @@ export async function POST(request: Request) {
             },
         });
 
-        // メトリクスを作成（デフォルト値で）
+        // メトリクスを作成（スコア値がある場合はそれを使用）
         await prisma.workMetrics.create({
             data: {
                 workId: work.id,
+                hipFocusScore: metrics?.hipFocusScore ?? 5,
+                cameraFocusScore: metrics?.cameraFocusScore ?? 5,
+                outfitEmphasisScore: metrics?.outfitEmphasisScore ?? 5,
+                danceFitnessScore: metrics?.danceFitnessScore ?? 5,
+                overallPickScore: metrics?.overallPickScore ?? 5,
             },
         });
 

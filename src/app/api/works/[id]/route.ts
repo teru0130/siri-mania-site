@@ -79,7 +79,7 @@ export async function PUT(
         const { id } = await params;
         const workId = parseInt(id);
         const body = await request.json();
-        const { title, description, thumbnailUrl, affiliateUrl, tagIds, isPublished, releaseDate } = body;
+        const { title, description, thumbnailUrl, affiliateUrl, tagIds, isPublished, releaseDate, metrics } = body;
 
         if (!title) {
             return NextResponse.json(
@@ -112,7 +112,38 @@ export async function PUT(
             },
         });
 
-        return NextResponse.json(work);
+        // スコアを更新（存在しない場合は作成）
+        if (metrics) {
+            await prisma.workMetrics.upsert({
+                where: { workId },
+                update: {
+                    hipFocusScore: metrics.hipFocusScore ?? 0,
+                    cameraFocusScore: metrics.cameraFocusScore ?? 0,
+                    outfitEmphasisScore: metrics.outfitEmphasisScore ?? 0,
+                    danceFitnessScore: metrics.danceFitnessScore ?? 0,
+                    overallPickScore: metrics.overallPickScore ?? 0,
+                },
+                create: {
+                    workId,
+                    hipFocusScore: metrics.hipFocusScore ?? 0,
+                    cameraFocusScore: metrics.cameraFocusScore ?? 0,
+                    outfitEmphasisScore: metrics.outfitEmphasisScore ?? 0,
+                    danceFitnessScore: metrics.danceFitnessScore ?? 0,
+                    overallPickScore: metrics.overallPickScore ?? 0,
+                },
+            });
+        }
+
+        // 更新後のworkを再取得（metricsを含めて）
+        const updatedWork = await prisma.work.findUnique({
+            where: { id: workId },
+            include: {
+                tags: { include: { tag: true } },
+                metrics: true,
+            },
+        });
+
+        return NextResponse.json(updatedWork);
     } catch (error) {
         console.error('Failed to update work:', error);
         return NextResponse.json(

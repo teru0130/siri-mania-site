@@ -1,13 +1,21 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Package, Plus, Pencil, Trash2, X, Save, Eye, EyeOff } from 'lucide-react';
+import { Package, Plus, Pencil, Trash2, X, Save, Eye, EyeOff, Star } from 'lucide-react';
 import Link from 'next/link';
 
 interface TagData {
     id: number;
     name: string;
     slug: string;
+}
+
+interface MetricsData {
+    hipFocusScore: number;
+    cameraFocusScore: number;
+    outfitEmphasisScore: number;
+    danceFitnessScore: number;
+    overallPickScore: number;
 }
 
 interface WorkData {
@@ -19,7 +27,7 @@ interface WorkData {
     isPublished: boolean;
     releaseDate: string | null;
     tags: { tagId: number; tag: TagData }[];
-    metrics: { overallPickScore: number } | null;
+    metrics: MetricsData | null;
     createdAt: string;
     updatedAt: string;
 }
@@ -38,6 +46,12 @@ export default function AdminWorksPage() {
         tagIds: [] as number[],
         isPublished: true,
         releaseDate: '',
+        // スコア
+        hipFocusScore: 5,
+        cameraFocusScore: 5,
+        outfitEmphasisScore: 5,
+        danceFitnessScore: 5,
+        overallPickScore: 5,
     });
     const [error, setError] = useState('');
     const [saving, setSaving] = useState(false);
@@ -80,6 +94,11 @@ export default function AdminWorksPage() {
                 tagIds: work.tags.map(t => t.tagId),
                 isPublished: work.isPublished,
                 releaseDate: work.releaseDate ? work.releaseDate.split('T')[0] : '',
+                hipFocusScore: work.metrics?.hipFocusScore ?? 5,
+                cameraFocusScore: work.metrics?.cameraFocusScore ?? 5,
+                outfitEmphasisScore: work.metrics?.outfitEmphasisScore ?? 5,
+                danceFitnessScore: work.metrics?.danceFitnessScore ?? 5,
+                overallPickScore: work.metrics?.overallPickScore ?? 5,
             });
         } else {
             setEditingWork(null);
@@ -91,6 +110,11 @@ export default function AdminWorksPage() {
                 tagIds: [],
                 isPublished: true,
                 releaseDate: '',
+                hipFocusScore: 5,
+                cameraFocusScore: 5,
+                outfitEmphasisScore: 5,
+                danceFitnessScore: 5,
+                overallPickScore: 5,
             });
         }
         setError('');
@@ -124,7 +148,16 @@ export default function AdminWorksPage() {
             const res = await fetch(url, {
                 method,
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({
+                    ...formData,
+                    metrics: {
+                        hipFocusScore: formData.hipFocusScore,
+                        cameraFocusScore: formData.cameraFocusScore,
+                        outfitEmphasisScore: formData.outfitEmphasisScore,
+                        danceFitnessScore: formData.danceFitnessScore,
+                        overallPickScore: formData.overallPickScore,
+                    },
+                }),
             });
 
             if (!res.ok) {
@@ -164,9 +197,13 @@ export default function AdminWorksPage() {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    ...work,
+                    title: work.title,
+                    description: work.description,
+                    thumbnailUrl: work.thumbnailUrl,
+                    affiliateUrl: work.affiliateUrl,
                     tagIds: work.tags.map(t => t.tagId),
                     isPublished: !work.isPublished,
+                    releaseDate: work.releaseDate,
                 }),
             });
             if (res.ok) {
@@ -176,6 +213,26 @@ export default function AdminWorksPage() {
             console.error(err);
         }
     };
+
+    // スコア入力用のスライダーコンポーネント
+    const ScoreSlider = ({ label, value, field, description }: { label: string; value: number; field: keyof typeof formData; description: string }) => (
+        <div className="space-y-1">
+            <div className="flex items-center justify-between">
+                <label className="text-sm font-medium text-gray-300">{label}</label>
+                <span className="text-sm font-bold text-pink-400">{value.toFixed(1)}</span>
+            </div>
+            <p className="text-xs text-gray-500">{description}</p>
+            <input
+                type="range"
+                min="0"
+                max="10"
+                step="0.5"
+                value={value}
+                onChange={(e) => setFormData(prev => ({ ...prev, [field]: parseFloat(e.target.value) }))}
+                className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-pink-500"
+            />
+        </div>
+    );
 
     if (loading) {
         return (
@@ -214,6 +271,7 @@ export default function AdminWorksPage() {
                                 <th className="px-4 py-3 text-left text-gray-400 font-medium">画像</th>
                                 <th className="px-4 py-3 text-left text-gray-400 font-medium">タイトル</th>
                                 <th className="px-4 py-3 text-left text-gray-400 font-medium">タグ</th>
+                                <th className="px-4 py-3 text-left text-gray-400 font-medium">総合スコア</th>
                                 <th className="px-4 py-3 text-left text-gray-400 font-medium">状態</th>
                                 <th className="px-4 py-3 text-left text-gray-400 font-medium">更新日</th>
                                 <th className="px-4 py-3 text-left text-gray-400 font-medium">操作</th>
@@ -254,6 +312,12 @@ export default function AdminWorksPage() {
                                         </div>
                                     </td>
                                     <td className="px-4 py-3">
+                                        <span className="flex items-center gap-1 text-yellow-400 font-medium">
+                                            <Star className="h-4 w-4 fill-current" />
+                                            {work.metrics?.overallPickScore?.toFixed(1) ?? '-'}
+                                        </span>
+                                    </td>
+                                    <td className="px-4 py-3">
                                         <button
                                             onClick={() => handleTogglePublish(work)}
                                             className={`px-2 py-1 rounded-full text-xs ${work.isPublished
@@ -289,7 +353,7 @@ export default function AdminWorksPage() {
                             ))}
                             {works.length === 0 && (
                                 <tr>
-                                    <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
+                                    <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
                                         作品がありません
                                     </td>
                                 </tr>
@@ -302,7 +366,7 @@ export default function AdminWorksPage() {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 overflow-y-auto py-8">
-                    <div className="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-2xl mx-4">
+                    <div className="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-lg font-bold text-white">
                                 {editingWork ? '作品を編集' : '新規作品作成'}
@@ -409,6 +473,48 @@ export default function AdminWorksPage() {
                                     {tags.length === 0 && (
                                         <span className="text-gray-500 text-sm">タグがありません</span>
                                     )}
+                                </div>
+                            </div>
+
+                            {/* スコア編集セクション */}
+                            <div className="rounded-lg border border-gray-700 p-4 bg-gray-900/50">
+                                <h4 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
+                                    <Star className="h-4 w-4 text-yellow-400" />
+                                    スコア評価 (10点満点)
+                                </h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <ScoreSlider
+                                        label="ヒップフォーカス度"
+                                        value={formData.hipFocusScore}
+                                        field="hipFocusScore"
+                                        description="お尻がどれだけメインで映っているか"
+                                    />
+                                    <ScoreSlider
+                                        label="カメラワーク"
+                                        value={formData.cameraFocusScore}
+                                        field="cameraFocusScore"
+                                        description="カメラアングル・撮影技術の評価"
+                                    />
+                                    <ScoreSlider
+                                        label="衣装・演出"
+                                        value={formData.outfitEmphasisScore}
+                                        field="outfitEmphasisScore"
+                                        description="衣装選び・シチュエーション設定の評価"
+                                    />
+                                    <ScoreSlider
+                                        label="ダンス・動き"
+                                        value={formData.danceFitnessScore}
+                                        field="danceFitnessScore"
+                                        description="動的なシーンの質を評価"
+                                    />
+                                </div>
+                                <div className="mt-4 pt-4 border-t border-gray-700">
+                                    <ScoreSlider
+                                        label="総合評価"
+                                        value={formData.overallPickScore}
+                                        field="overallPickScore"
+                                        description="上記を総合した推奨度"
+                                    />
                                 </div>
                             </div>
 
