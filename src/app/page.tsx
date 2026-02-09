@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { TrendingUp, Sparkles, Tag, BookOpen, ArrowRight, Star, Flame } from 'lucide-react';
+import { TrendingUp, Sparkles, Tag, BookOpen, ArrowRight, Star, Flame, FileText } from 'lucide-react';
 import prisma from '@/lib/prisma';
 import WorkCard from '@/components/WorkCard';
 
@@ -74,6 +74,13 @@ export default async function HomePage() {
           >
             <TrendingUp className="h-5 w-5" />
             ランキングを見る
+          </Link>
+          <Link
+            href="/articles"
+            className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 px-6 py-3 font-semibold text-white hover:opacity-90 transition-all"
+          >
+            <FileText className="h-5 w-5" />
+            おすすめお尻作品記事一覧
           </Link>
           <Link
             href="/tags"
