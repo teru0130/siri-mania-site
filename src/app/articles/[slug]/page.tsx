@@ -5,6 +5,8 @@ import { ArrowLeft, Calendar, FileText } from 'lucide-react';
 import prisma from '@/lib/prisma';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 interface PageProps {
     params: Promise<{ slug: string }>;
 }
