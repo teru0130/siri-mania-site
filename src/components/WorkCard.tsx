@@ -31,7 +31,29 @@ export default function WorkCard({ work, showRank, size = 'medium' }: WorkCardPr
         }
     };
 
+    // 画像URLを高解像度化（DMMの画像URLからサイズパラメータを除去または調整）
+    const getHighResImageUrl = (url: string | null | undefined): string | null => {
+        if (!url) return null;
+
+        try {
+            const urlObj = new URL(url);
+            // DMMの画像URLの場合、サイズパラメータを高解像度に変更
+            if (urlObj.hostname.includes('dmm.co.jp')) {
+                // 既存のパラメータをリセットして高解像度を指定
+                urlObj.searchParams.delete('w');
+                urlObj.searchParams.delete('h');
+                urlObj.searchParams.set('w', '400');
+                urlObj.searchParams.set('h', '600');
+                return urlObj.toString();
+            }
+            return url;
+        } catch {
+            return url;
+        }
+    };
+
     const overallScore = work.metrics?.overallPickScore ?? 0;
+    const highResThumbnail = getHighResImageUrl(work.thumbnailUrl);
 
     return (
         <div className={`group relative rounded-xl glass-card overflow-hidden card-hover ${size === 'large' ? 'col-span-2 row-span-2' : ''
@@ -45,13 +67,14 @@ export default function WorkCard({ work, showRank, size = 'medium' }: WorkCardPr
 
             {/* Thumbnail */}
             <Link href={`/works/${work.id}`} className="block aspect-[3/4] relative overflow-hidden img-overlay">
-                {work.thumbnailUrl ? (
+                {highResThumbnail ? (
                     <Image
-                        src={work.thumbnailUrl}
+                        src={highResThumbnail}
                         alt={work.title}
                         fill
                         className="object-cover transition-transform duration-500 group-hover:scale-110"
                         sizes={size === 'large' ? '(max-width: 768px) 100vw, 50vw' : '(max-width: 768px) 50vw, 25vw'}
+                        quality={85}
                     />
                 ) : (
                     <div className="h-full w-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center">

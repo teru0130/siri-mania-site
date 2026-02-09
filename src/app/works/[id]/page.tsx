@@ -71,6 +71,26 @@ export default async function WorkDetailPage({ params }: PageProps) {
     const { work, relatedWorks } = data;
     const actresses = (work.actresses as string[]) || [];
 
+    // 画像URLを高解像度化（DMMの画像URLからサイズパラメータを調整）
+    const getHighResImageUrl = (url: string | null | undefined): string | null => {
+        if (!url) return null;
+        try {
+            const urlObj = new URL(url);
+            if (urlObj.hostname.includes('dmm.co.jp')) {
+                urlObj.searchParams.delete('w');
+                urlObj.searchParams.delete('h');
+                urlObj.searchParams.set('w', '500');
+                urlObj.searchParams.set('h', '700');
+                return urlObj.toString();
+            }
+            return url;
+        } catch {
+            return url;
+        }
+    };
+
+    const highResThumbnail = getHighResImageUrl(work.thumbnailUrl);
+
     return (
         <div className="container mx-auto px-4 py-8">
             {/* Back Link */}
@@ -87,13 +107,14 @@ export default async function WorkDetailPage({ params }: PageProps) {
                 <div className="lg:col-span-1">
                     {/* Thumbnail */}
                     <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-gray-800 mb-6">
-                        {work.thumbnailUrl ? (
+                        {highResThumbnail ? (
                             <Image
-                                src={work.thumbnailUrl}
+                                src={highResThumbnail}
                                 alt={work.title}
                                 fill
                                 className="object-cover"
                                 priority
+                                quality={90}
                             />
                         ) : (
                             <div className="h-full w-full flex items-center justify-center">
