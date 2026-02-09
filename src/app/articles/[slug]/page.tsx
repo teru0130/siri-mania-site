@@ -13,8 +13,11 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params;
+    // URLエンコードされたスラッグをデコード
+    const decodedSlug = decodeURIComponent(slug);
+
     const article = await prisma.article.findUnique({
-        where: { slug },
+        where: { slug: decodedSlug },
     });
 
     if (!article || !article.isPublished) {
@@ -29,9 +32,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function ArticleDetailPage({ params }: PageProps) {
     const { slug } = await params;
+    // URLエンコードされたスラッグをデコード
+    const decodedSlug = decodeURIComponent(slug);
 
     const article = await prisma.article.findUnique({
-        where: { slug },
+        where: { slug: decodedSlug },
     });
 
     if (!article || !article.isPublished) {
