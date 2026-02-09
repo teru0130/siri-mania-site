@@ -92,22 +92,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-8 sm:mb-12">
-        <div className="rounded-xl stat-card p-4 sm:p-6 text-center group hover:scale-105 transition-transform duration-300">
-          <p className="text-2xl sm:text-3xl font-bold text-white group-hover:text-pink-400 transition-colors">{stats.totalWorks.toLocaleString()}</p>
-          <p className="text-gray-400 text-xs sm:text-sm">作品数</p>
-        </div>
-        <div className="rounded-xl stat-card p-4 sm:p-6 text-center group hover:scale-105 transition-transform duration-300">
-          <p className="text-2xl sm:text-3xl font-bold text-white group-hover:text-pink-400 transition-colors">{stats.totalTags}</p>
-          <p className="text-gray-400 text-xs sm:text-sm">タグ数</p>
-        </div>
-        <div className="rounded-xl stat-card p-4 sm:p-6 text-center group hover:scale-105 transition-transform duration-300">
-          <p className="text-2xl sm:text-3xl font-bold text-white group-hover:text-pink-400 transition-colors">5</p>
-          <p className="text-gray-400 text-xs sm:text-sm">評価項目</p>
-        </div>
-      </section>
-
       {/* Top Rated */}
       {topRatedWorks.length > 0 && (
         <section className="mb-12">
