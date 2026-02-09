@@ -54,28 +54,91 @@ export default async function ArticleDetailPage({ params }: PageProps) {
 
     // Simple markdown-like rendering (basic)
     const renderContent = (content: string) => {
+        // テキスト内のインライン要素をレンダリング
+        const renderInline = (text: string, baseKey: string) => {
+            const elements: React.ReactNode[] = [];
+            let remaining = text;
+            let keyIndex = 0;
+
+            // 画像: ![alt](url)
+            const imageRegex = /!\[([^\]]*)\]\(([^)]+)\)/g;
+            let lastIndex = 0;
+            let match;
+
+            while ((match = imageRegex.exec(text)) !== null) {
+                // 画像の前のテキスト
+                if (match.index > lastIndex) {
+                    const beforeText = text.substring(lastIndex, match.index);
+                    elements.push(...renderBoldText(beforeText, `${baseKey}-${keyIndex++}`));
+                }
+                // 画像
+                elements.push(
+                    <img
+                        key={`${baseKey}-img-${keyIndex++}`}
+                        src={match[2]}
+                        alt={match[1] || '画像'}
+                        className="max-w-full h-auto rounded-lg my-4 mx-auto block"
+                    />
+                );
+                lastIndex = match.index + match[0].length;
+            }
+
+            // 残りのテキスト
+            if (lastIndex < text.length) {
+                elements.push(...renderBoldText(text.substring(lastIndex), `${baseKey}-${keyIndex++}`));
+            }
+
+            return elements.length > 0 ? elements : renderBoldText(text, baseKey);
+        };
+
+        // 太字: **text**
+        const renderBoldText = (text: string, baseKey: string): React.ReactNode[] => {
+            const parts = text.split(/(\*\*[^*]+\*\*)/g);
+            return parts.map((part, i) => {
+                if (part.startsWith('**') && part.endsWith('**')) {
+                    return <strong key={`${baseKey}-bold-${i}`} className="font-bold text-white">{part.slice(2, -2)}</strong>;
+                }
+                return <span key={`${baseKey}-text-${i}`}>{part}</span>;
+            });
+        };
+
         return content
             .split('\n\n')
             .map((paragraph, index) => {
+                // 画像のみの段落
+                if (/^!\[([^\]]*)\]\(([^)]+)\)$/.test(paragraph.trim())) {
+                    const match = paragraph.trim().match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+                    if (match) {
+                        return (
+                            <div key={index} className="my-6">
+                                <img
+                                    src={match[2]}
+                                    alt={match[1] || '画像'}
+                                    className="max-w-full h-auto rounded-lg mx-auto block"
+                                />
+                            </div>
+                        );
+                    }
+                }
                 // Headings
                 if (paragraph.startsWith('### ')) {
                     return (
                         <h3 key={index} className="text-xl font-bold text-white mt-8 mb-4">
-                            {paragraph.slice(4)}
+                            {renderInline(paragraph.slice(4), `h3-${index}`)}
                         </h3>
                     );
                 }
                 if (paragraph.startsWith('## ')) {
                     return (
                         <h2 key={index} className="text-2xl font-bold text-white mt-10 mb-4">
-                            {paragraph.slice(3)}
+                            {renderInline(paragraph.slice(3), `h2-${index}`)}
                         </h2>
                     );
                 }
                 if (paragraph.startsWith('# ')) {
                     return (
                         <h1 key={index} className="text-3xl font-bold text-white mt-10 mb-4">
-                            {paragraph.slice(2)}
+                            {renderInline(paragraph.slice(2), `h1-${index}`)}
                         </h1>
                     );
                 }
@@ -85,7 +148,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
                     return (
                         <ul key={index} className="list-disc list-inside space-y-2 text-gray-300 my-4">
                             {items.map((item, i) => (
-                                <li key={i}>{item.slice(2)}</li>
+                                <li key={i}>{renderInline(item.slice(2), `li-${index}-${i}`)}</li>
                             ))}
                         </ul>
                     );
@@ -93,7 +156,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
                 // Regular paragraph
                 return (
                     <p key={index} className="text-gray-300 leading-relaxed my-4">
-                        {paragraph}
+                        {renderInline(paragraph, `p-${index}`)}
                     </p>
                 );
             });
