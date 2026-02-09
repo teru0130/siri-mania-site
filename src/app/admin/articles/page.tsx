@@ -2,13 +2,15 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { FileText, Plus, Pencil, Trash2, Eye, EyeOff } from 'lucide-react';
+import { FileText, Plus, Pencil, Trash2, Eye, EyeOff, Globe, GlobeLock } from 'lucide-react';
 
 interface Article {
     id: number;
     slug: string;
     title: string;
     excerpt: string | null;
+    content: string;
+    thumbnailUrl: string | null;
     isPublished: boolean;
     publishedAt: string | null;
     createdAt: string;
@@ -18,6 +20,7 @@ interface Article {
 export default function AdminArticlesPage() {
     const [articles, setArticles] = useState<Article[]>([]);
     const [loading, setLoading] = useState(true);
+    const [publishing, setPublishing] = useState<number | null>(null);
 
     const fetchArticles = useCallback(async () => {
         try {
@@ -53,6 +56,36 @@ export default function AdminArticlesPage() {
         }
     };
 
+    // 公開/非公開を切り替える関数
+    const handleTogglePublish = async (article: Article) => {
+        const newIsPublished = !article.isPublished;
+        const action = newIsPublished ? '公開' : '非公開に';
+
+        if (!confirm(`この記事を${action}しますか？`)) return;
+
+        setPublishing(article.id);
+
+        try {
+            const res = await fetch(`/api/articles/${article.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ...article,
+                    isPublished: newIsPublished,
+                }),
+            });
+
+            if (res.ok) {
+                const updated = await res.json();
+                setArticles(articles.map(a => a.id === article.id ? updated : a));
+            }
+        } catch (error) {
+            console.error('Error updating article:', error);
+        } finally {
+            setPublishing(null);
+        }
+    };
+
     const formatDate = (dateString: string | null) => {
         if (!dateString) return '-';
         return new Date(dateString).toLocaleDateString('ja-JP');
@@ -81,6 +114,11 @@ export default function AdminArticlesPage() {
                     <Plus className="h-5 w-5" />
                     新規作成
                 </Link>
+            </div>
+
+            {/* Info */}
+            <div className="bg-blue-900/30 border border-blue-700 rounded-lg p-4 text-sm text-blue-300">
+                <p>💡 <strong>公開方法:</strong> 「公開する」ボタンをクリックすると、記事が公開サイトに表示されます。</p>
             </div>
 
             {/* Articles Table */}
@@ -133,6 +171,32 @@ export default function AdminArticlesPage() {
                                     </td>
                                     <td className="px-4 py-3">
                                         <div className="flex items-center gap-2">
+                                            {/* 公開/非公開ボタン */}
+                                            <button
+                                                onClick={() => handleTogglePublish(article)}
+                                                disabled={publishing === article.id}
+                                                className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${article.isPublished
+                                                        ? 'bg-orange-600 hover:bg-orange-700 text-white'
+                                                        : 'bg-green-600 hover:bg-green-700 text-white'
+                                                    } ${publishing === article.id ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                title={article.isPublished ? '非公開にする' : '公開する'}
+                                            >
+                                                {publishing === article.id ? (
+                                                    <span className="animate-spin h-3 w-3 border-2 border-white border-t-transparent rounded-full"></span>
+                                                ) : article.isPublished ? (
+                                                    <>
+                                                        <GlobeLock className="h-3 w-3" />
+                                                        非公開
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Globe className="h-3 w-3" />
+                                                        公開する
+                                                    </>
+                                                )}
+                                            </button>
+
+                                            {/* 編集ボタン */}
                                             <Link
                                                 href={`/admin/articles/${article.id}/edit`}
                                                 className="p-2 text-gray-400 hover:text-white hover:bg-gray-600 rounded-lg transition-colors"
@@ -140,6 +204,8 @@ export default function AdminArticlesPage() {
                                             >
                                                 <Pencil className="h-4 w-4" />
                                             </Link>
+
+                                            {/* 削除ボタン */}
                                             <button
                                                 onClick={() => handleDelete(article.id)}
                                                 className="p-2 text-gray-400 hover:text-red-400 hover:bg-gray-600 rounded-lg transition-colors"
@@ -147,12 +213,14 @@ export default function AdminArticlesPage() {
                                             >
                                                 <Trash2 className="h-4 w-4" />
                                             </button>
+
+                                            {/* 表示ボタン（公開中のみ） */}
                                             {article.isPublished && (
                                                 <Link
                                                     href={`/articles/${article.slug}`}
                                                     target="_blank"
                                                     className="p-2 text-gray-400 hover:text-pink-400 hover:bg-gray-600 rounded-lg transition-colors"
-                                                    title="表示"
+                                                    title="サイトで表示"
                                                 >
                                                     <Eye className="h-4 w-4" />
                                                 </Link>
