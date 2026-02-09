@@ -99,6 +99,33 @@ export default function GuidePage() {
                         週間ランキングは毎週月曜日、月間ランキングは毎月1日に更新されます。
                     </p>
                 </section>
+
+                {/* Articles */}
+                <section className="rounded-xl bg-gray-800 border border-gray-700 p-4 sm:p-6">
+                    <h2 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 flex items-center gap-2">
+                        <BookOpen className="h-5 w-5 text-cyan-400" />
+                        おすすめ記事について
+                    </h2>
+                    <div className="space-y-2 sm:space-y-3 text-gray-300 text-sm sm:text-base">
+                        <p>
+                            おすすめ記事では、お尻フェチ向けのAV作品を独自の視点で紹介・レビューしています。
+                        </p>
+                        <p>
+                            <strong>記事の内容：</strong>
+                        </p>
+                        <ul className="list-disc list-inside space-y-1 pl-2">
+                            <li>作品の見どころポイント</li>
+                            <li>おすすめシーン解説</li>
+                            <li>シチュエーション・衣装の評価</li>
+                            <li>類似作品との比較</li>
+                        </ul>
+                        <p className="pt-2">
+                            <Link href="/articles" className="text-pink-400 hover:text-pink-300 underline">
+                                記事一覧はこちら →
+                            </Link>
+                        </p>
+                    </div>
+                </section>
             </div>
         </div>
     );
