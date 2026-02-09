@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Menu, X, Search, TrendingUp, Tag, Home, BookOpen, Shield } from 'lucide-react';
+import { Menu, X, Search, TrendingUp, Tag, Home, BookOpen, Shield, FileText } from 'lucide-react';
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const navLinks = [
         { href: '/', label: 'ホーム', icon: Home },
+        { href: '/articles', label: '記事', icon: FileText },
         { href: '/ranking/weekly', label: 'ランキング', icon: TrendingUp },
         { href: '/tags', label: 'タグ', icon: Tag },
         { href: '/guide', label: 'ガイド', icon: BookOpen },
