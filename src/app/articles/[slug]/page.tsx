@@ -52,7 +52,12 @@ export default async function ArticleDetailPage({ params }: PageProps) {
         });
     };
 
-    // Simple markdown-like rendering (basic)
+    // HTML埋め込みを含む段落かどうかを判定
+    const isHtmlContent = (text: string) => {
+        return /<[a-zA-Z][^>]*>/.test(text);
+    };
+
+    // Simple markdown-like rendering (basic) + HTML embed support
     const renderContent = (content: string) => {
         // テキスト内のインライン要素をレンダリング
         const renderInline = (text: string, baseKey: string) => {
@@ -105,9 +110,22 @@ export default async function ArticleDetailPage({ params }: PageProps) {
         return content
             .split('\n\n')
             .map((paragraph, index) => {
+                const trimmed = paragraph.trim();
+
+                // HTMLタグを含む段落（アフィリエイトコード等）はそのままHTMLとしてレンダリング
+                if (isHtmlContent(trimmed)) {
+                    return (
+                        <div
+                            key={index}
+                            className="my-6 affiliate-embed text-center"
+                            dangerouslySetInnerHTML={{ __html: trimmed }}
+                        />
+                    );
+                }
+
                 // 画像のみの段落
-                if (/^!\[([^\]]*)\]\(([^)]+)\)$/.test(paragraph.trim())) {
-                    const match = paragraph.trim().match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+                if (/^!\[([^\]]*)\]\(([^)]+)\)$/.test(trimmed)) {
+                    const match = trimmed.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
                     if (match) {
                         return (
                             <div key={index} className="my-6">
@@ -121,30 +139,30 @@ export default async function ArticleDetailPage({ params }: PageProps) {
                     }
                 }
                 // Headings
-                if (paragraph.startsWith('### ')) {
+                if (trimmed.startsWith('### ')) {
                     return (
                         <h3 key={index} className="text-xl font-bold text-white mt-8 mb-4">
-                            {renderInline(paragraph.slice(4), `h3-${index}`)}
+                            {renderInline(trimmed.slice(4), `h3-${index}`)}
                         </h3>
                     );
                 }
-                if (paragraph.startsWith('## ')) {
+                if (trimmed.startsWith('## ')) {
                     return (
                         <h2 key={index} className="text-2xl font-bold text-white mt-10 mb-4">
-                            {renderInline(paragraph.slice(3), `h2-${index}`)}
+                            {renderInline(trimmed.slice(3), `h2-${index}`)}
                         </h2>
                     );
                 }
-                if (paragraph.startsWith('# ')) {
+                if (trimmed.startsWith('# ')) {
                     return (
                         <h1 key={index} className="text-3xl font-bold text-white mt-10 mb-4">
-                            {renderInline(paragraph.slice(2), `h1-${index}`)}
+                            {renderInline(trimmed.slice(2), `h1-${index}`)}
                         </h1>
                     );
                 }
                 // Lists
-                if (paragraph.startsWith('- ')) {
-                    const items = paragraph.split('\n').filter(line => line.startsWith('- '));
+                if (trimmed.startsWith('- ')) {
+                    const items = trimmed.split('\n').filter(line => line.startsWith('- '));
                     return (
                         <ul key={index} className="list-disc list-inside space-y-2 text-gray-300 my-4">
                             {items.map((item, i) => (
@@ -156,7 +174,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
                 // Regular paragraph
                 return (
                     <p key={index} className="text-gray-300 leading-relaxed my-4">
-                        {renderInline(paragraph, `p-${index}`)}
+                        {renderInline(trimmed, `p-${index}`)}
                     </p>
                 );
             });

@@ -311,3 +311,33 @@ body {
   background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 50%);
   pointer-events: none;
 }
+
+/* ================================
+   Affiliate Embed Styles
+================================ */
+.affiliate-embed a {
+  color: #f472b6;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.affiliate-embed a:hover {
+  color: #ec4899;
+}
+
+.affiliate-embed img {
+  max-width: 100%;
+  height: auto;
+  display: inline-block;
+  border-radius: 8px;
+}
+
+.affiliate-embed a img {
+  border: 2px solid transparent;
+  transition: border-color 0.3s, transform 0.3s;
+}
+
+.affiliate-embed a img:hover {
+  border-color: rgba(236, 72, 153, 0.5);
+  transform: scale(1.02);
+}

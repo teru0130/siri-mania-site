@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Save, Eye, EyeOff, ImagePlus, Bold, Heading2, Heading3, List } from 'lucide-react';
+import { ArrowLeft, Save, Eye, EyeOff, ImagePlus, Bold, Heading2, Heading3, List, Link2 } from 'lucide-react';
 
 export default function EditArticlePage() {
     const router = useRouter();
@@ -17,6 +17,8 @@ export default function EditArticlePage() {
     const [showImageModal, setShowImageModal] = useState(false);
     const [imageUrl, setImageUrl] = useState('');
     const [imageAlt, setImageAlt] = useState('');
+    const [showAffiliateModal, setShowAffiliateModal] = useState(false);
+    const [affiliateCode, setAffiliateCode] = useState('');
     const [formData, setFormData] = useState({
         title: '',
         slug: '',
@@ -85,6 +87,14 @@ export default function EditArticlePage() {
         setImageAlt('');
     };
 
+    // アフィリエイトコード挿入
+    const handleInsertAffiliate = () => {
+        if (!affiliateCode.trim()) return;
+        insertText('\n\n' + affiliateCode.trim() + '\n\n');
+        setShowAffiliateModal(false);
+        setAffiliateCode('');
+    };
+
     // Markdown ツールバーボタン
     const toolbarButtons = [
         { icon: Bold, label: '太字', action: () => insertText('**', '**') },
@@ -92,6 +102,7 @@ export default function EditArticlePage() {
         { icon: Heading3, label: '見出し3', action: () => insertText('### ') },
         { icon: List, label: 'リスト', action: () => insertText('- ') },
         { icon: ImagePlus, label: '画像挿入', action: () => setShowImageModal(true) },
+        { icon: Link2, label: 'アフィリエイトコード挿入', action: () => setShowAffiliateModal(true) },
     ];
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -210,6 +221,62 @@ export default function EditArticlePage() {
                 </div>
             )}
 
+            {/* Affiliate Code Insert Modal */}
+            {showAffiliateModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                    <div className="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-lg mx-4">
+                        <h3 className="text-lg font-bold text-white mb-2">アフィリエイトコードを挿入</h3>
+                        <p className="text-sm text-gray-400 mb-4">
+                            DMMのアフィリエイトリンク（テキスト広告・バナー広告のHTMLコード）をそのまま貼り付けてください。
+                        </p>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-2">
+                                    HTMLコード <span className="text-red-400">*</span>
+                                </label>
+                                <textarea
+                                    value={affiliateCode}
+                                    onChange={(e) => setAffiliateCode(e.target.value)}
+                                    rows={6}
+                                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:border-pink-500 focus:ring-1 focus:ring-pink-500 outline-none font-mono text-xs"
+                                    placeholder='例: <a href="https://al.dmm.co.jp/..."><img src="..."></a>'
+                                    autoFocus
+                                />
+                            </div>
+                            {affiliateCode && (
+                                <div className="p-3 bg-gray-900 rounded-lg">
+                                    <p className="text-xs text-gray-400 mb-2">プレビュー:</p>
+                                    <div
+                                        className="affiliate-embed text-center"
+                                        dangerouslySetInnerHTML={{ __html: affiliateCode }}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                        <div className="flex items-center gap-3 mt-6">
+                            <button
+                                type="button"
+                                onClick={handleInsertAffiliate}
+                                disabled={!affiliateCode.trim()}
+                                className="flex-1 px-4 py-2 bg-pink-600 hover:bg-pink-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+                            >
+                                挿入
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setShowAffiliateModal(false);
+                                    setAffiliateCode('');
+                                }}
+                                className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+                            >
+                                キャンセル
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
                 {error && (
@@ -301,7 +368,7 @@ export default function EditArticlePage() {
                                     <btn.icon className="h-4 w-4" />
                                 </button>
                             ))}
-                            <span className="ml-auto text-xs text-gray-500">Markdownが使えます</span>
+                            <span className="ml-auto text-xs text-gray-500">Markdown / HTMLが使えます</span>
                         </div>
 
                         <textarea
