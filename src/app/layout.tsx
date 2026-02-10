@@ -31,6 +31,9 @@ export const metadata: Metadata = {
     title: "お尻マニア",
     description: "お尻・ヒップに特化したAV作品のおすすめサイト。",
   },
+  verification: {
+    google: "VFS6SK2NocOKVb76au37MSWd6ZPbQAclh3nBK5BX0wM",
+  },
 };
 
 export default function RootLayout({
