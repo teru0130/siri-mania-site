@@ -28,6 +28,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const description = article.excerpt || article.title;
     const url = `https://siri-mania-site.vercel.app/articles/${article.slug}`;
 
+    // DMM画像URLを高画質化・JPEG化（パラメータ除去）
+    let ogImageUrl = article.thumbnailUrl;
+    if (ogImageUrl && ogImageUrl.includes('dmm.co.jp')) {
+        try {
+            const urlObj = new URL(ogImageUrl);
+            urlObj.search = ''; // パラメータを全削除してオリジナルサイズ（JPEG）を取得
+            ogImageUrl = urlObj.toString();
+        } catch (e) {
+            // URL解析エラー時は元のURLを使用
+        }
+    }
+
     return {
         title,
         description,
@@ -38,10 +50,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             siteName: 'お尻マニア',
             type: 'article',
             locale: 'ja_JP',
-            ...(article.thumbnailUrl && {
+            ...(ogImageUrl && {
                 images: [
                     {
-                        url: article.thumbnailUrl,
+                        url: ogImageUrl,
                         width: 1200,
                         height: 630,
                         alt: article.title,
@@ -50,11 +62,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             }),
         },
         twitter: {
-            card: article.thumbnailUrl ? 'summary_large_image' : 'summary',
+            card: ogImageUrl ? 'summary_large_image' : 'summary',
             title,
             description,
-            ...(article.thumbnailUrl && {
-                images: [article.thumbnailUrl],
+            ...(ogImageUrl && {
+                images: [ogImageUrl],
             }),
         },
     };
