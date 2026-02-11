@@ -3,6 +3,7 @@ import { ArrowLeft, Play, Film } from 'lucide-react';
 import { headers } from 'next/headers';
 import prisma from '@/lib/prisma';
 import type { Metadata } from 'next';
+import SampleVideoCard from '@/components/SampleVideoCard';
 
 export const dynamic = 'force-dynamic';
 
@@ -55,30 +56,7 @@ export default async function VideosPage() {
             {videos.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {videos.map((video) => (
-                        <div key={video.id} className="bg-gray-900 rounded-xl overflow-hidden border border-gray-800 flex flex-col">
-                            {/* Video Embed */}
-                            <div className="aspect-video bg-black relative">
-                                <div
-                                    className="w-full h-full [&_iframe]:w-full [&_iframe]:h-full [&_iframe]:border-0"
-                                    dangerouslySetInnerHTML={{ __html: video.embedCode }}
-                                />
-                            </div>
-
-                            {/* Content */}
-                            <div className="p-4 flex-1 flex flex-col">
-                                <h3 className="text-lg font-bold text-white mb-2 line-clamp-2">
-                                    {video.title}
-                                </h3>
-                                {video.description && (
-                                    <p className="text-sm text-gray-400 line-clamp-3 mb-4 flex-1">
-                                        {video.description}
-                                    </p>
-                                )}
-                                <div className="mt-auto text-xs text-gray-500">
-                                    {new Date(video.createdAt).toLocaleDateString('ja-JP')}
-                                </div>
-                            </div>
-                        </div>
+                        <SampleVideoCard key={video.id} video={video} />
                     ))}
                 </div>
             ) : (

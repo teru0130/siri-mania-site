@@ -133,6 +133,11 @@ export default function NewVideoPage() {
                             <p className="mt-2 text-xs text-gray-500">
                                 一覧表示用のサムネイル画像があればURLを入力してください（任意）。
                             </p>
+                            {formData.thumbnailUrl && (
+                                <div className="mt-2 w-48 aspect-video rounded-lg overflow-hidden border border-gray-700 bg-black">
+                                    <img src={formData.thumbnailUrl} alt="Thumbnail preview" className="w-full h-full object-cover" />
+                                </div>
+                            )}
                         </div>
 
                         <div className="flex items-center justify-between pt-4 border-t border-gray-800">
@@ -141,8 +146,8 @@ export default function NewVideoPage() {
                                 type="button"
                                 onClick={() => setFormData({ ...formData, isPublished: !formData.isPublished })}
                                 className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${formData.isPublished
-                                        ? 'bg-green-500/10 text-green-400 hover:bg-green-500/20'
-                                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                                    ? 'bg-green-500/10 text-green-400 hover:bg-green-500/20'
+                                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                                     }`}
                             >
                                 {formData.isPublished ? (
