@@ -175,7 +175,14 @@ export default function EditVideoPage() {
                             <input
                                 type="url"
                                 value={formData.thumbnailUrl}
-                                onChange={(e) => setFormData({ ...formData, thumbnailUrl: e.target.value })}
+                                onChange={(e) => {
+                                    let val = e.target.value;
+                                    // DMM画像最適化: ps.jpg (small) -> pl.jpg (large)
+                                    if (val.includes('dmm.co.jp') && val.endsWith('ps.jpg')) {
+                                        val = val.replace('ps.jpg', 'pl.jpg');
+                                    }
+                                    setFormData({ ...formData, thumbnailUrl: val });
+                                }}
                                 className="w-full px-4 py-2 bg-gray-950 border border-gray-700 rounded-lg text-white focus:border-pink-500 focus:ring-1 focus:ring-pink-500 outline-none"
                                 placeholder="https://example.com/thumbnail.jpg"
                             />
@@ -183,6 +190,8 @@ export default function EditVideoPage() {
                                 一覧表示用のサムネイル画像があればURLを入力してください（任意）。
                                 <br />
                                 <span className="text-yellow-500">※ 高画質（1280x720以上推奨）の画像を使用してください。画質が低いとぼやけて表示されます。</span>
+                                <br />
+                                <span className="text-blue-400">※ DMMの画像URL（ps.jpg）は自動的に高画質版（pl.jpg）に変換されます。</span>
                             </p>
                             {formData.thumbnailUrl && (
                                 <div className="mt-2 w-48 aspect-video rounded-lg overflow-hidden border border-gray-700 bg-black">
