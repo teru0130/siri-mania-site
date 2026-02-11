@@ -4,7 +4,7 @@ import { SessionProvider } from 'next-auth/react';
 import { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Package, Tag, TrendingUp, BarChart3, LogOut, Home, FileText } from 'lucide-react';
+import { LayoutDashboard, Package, Tag, TrendingUp, BarChart3, LogOut, Home, FileText, Clapperboard } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 
 function AdminSidebar() {
@@ -15,6 +15,7 @@ function AdminSidebar() {
         { href: '/admin', label: 'ダッシュボード', icon: LayoutDashboard },
         { href: '/admin/articles', label: '記事管理', icon: FileText },
         { href: '/admin/works', label: '作品管理', icon: Package },
+        { href: '/admin/videos', label: '動画管理', icon: Clapperboard },
         { href: '/admin/tags', label: 'タグ管理', icon: Tag },
         { href: '/admin/rankings', label: 'ランキング', icon: TrendingUp },
         { href: '/admin/analytics', label: 'アナリティクス', icon: BarChart3 },

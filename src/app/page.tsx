@@ -86,8 +86,16 @@ export default async function HomePage() {
             href="/tags"
             className="flex items-center gap-2 rounded-lg glass-card px-6 py-3 font-semibold text-white hover:border-pink-500/30 transition-all"
           >
-            <Tag className="h-5 w-5" />
             タグから探す
+          </Link>
+          <Link
+            href="/videos"
+            className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-red-600 to-rose-600 px-6 py-3 font-semibold text-white hover:opacity-90 transition-all shadow-lg shadow-red-500/20"
+          >
+            <div className="flex items-center justify-center bg-white/20 rounded-full w-5 h-5">
+              <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+            </div>
+            サンプル動画を見る
           </Link>
         </div>
       </section>

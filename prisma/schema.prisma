@@ -177,3 +177,16 @@ model Article {
 
   @@map("articles")
 }
+
+model SampleVideo {
+  id           String   @id @default(cuid())
+  title        String
+  embedCode    String   @map("embed_code") // HTML embed code
+  description  String?
+  thumbnailUrl String?  @map("thumbnail_url")
+  isPublished  Boolean  @default(false) @map("is_published")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("sample_videos")
+}
