@@ -7,10 +7,45 @@ import SampleVideoCard from '@/components/SampleVideoCard';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-    title: 'サンプル動画一覧 - お尻マニア',
-    description: 'お尻・ヒップに特化した厳選AV作品のサンプル動画をご覧いただけます。',
-};
+export async function generateMetadata(): Promise<Metadata> {
+    const latestVideo = await prisma.sampleVideo.findFirst({
+        where: { isPublished: true },
+        orderBy: { createdAt: 'desc' },
+    });
+
+    const title = 'サンプル動画一覧 - お尻マニア';
+    const description = 'お尻・ヒップに特化した厳選AV作品のサンプル動画をご覧いただけます。';
+
+    let ogImageUrl = latestVideo?.thumbnailUrl;
+
+    // DMM画像高画質化 & パラメータ除去
+    if (ogImageUrl && ogImageUrl.includes('dmm.co.jp')) {
+        try {
+            const urlObj = new URL(ogImageUrl);
+            urlObj.search = '';
+            ogImageUrl = urlObj.toString();
+            if (ogImageUrl.endsWith('ps.jpg')) {
+                ogImageUrl = ogImageUrl.replace('ps.jpg', 'pl.jpg');
+            }
+        } catch { }
+    }
+
+    return {
+        title,
+        description,
+        openGraph: {
+            title,
+            description,
+            images: ogImageUrl ? [ogImageUrl] : [],
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            images: ogImageUrl ? [ogImageUrl] : [],
+        },
+    };
+}
 
 // サーバーサイドでデータ取得
 async function getVideos() {

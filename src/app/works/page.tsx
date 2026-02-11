@@ -6,12 +6,47 @@ import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-    title: '新着作品一覧 - お尻マニア',
-    description: '最近追加されたお尻・ヒップに特化したAV作品の一覧です。',
-};
-
 const ITEMS_PER_PAGE = 20;
+
+export async function generateMetadata(): Promise<Metadata> {
+    const latestWork = await prisma.work.findFirst({
+        where: { isPublished: true },
+        orderBy: { createdAt: 'desc' },
+    });
+
+    const title = '新着作品一覧 - お尻マニア';
+    const description = '最近追加されたお尻・ヒップに特化したAV作品の一覧です。';
+
+    let ogImageUrl = latestWork?.thumbnailUrl;
+
+    // DMM画像高画質化 & パラメータ除去
+    if (ogImageUrl && ogImageUrl.includes('dmm.co.jp')) {
+        try {
+            const urlObj = new URL(ogImageUrl);
+            urlObj.search = '';
+            ogImageUrl = urlObj.toString();
+            if (ogImageUrl.endsWith('ps.jpg')) {
+                ogImageUrl = ogImageUrl.replace('ps.jpg', 'pl.jpg');
+            }
+        } catch { }
+    }
+
+    return {
+        title,
+        description,
+        openGraph: {
+            title,
+            description,
+            images: ogImageUrl ? [ogImageUrl] : [],
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            images: ogImageUrl ? [ogImageUrl] : [],
+        },
+    };
+}
 
 interface PageProps {
     searchParams: Promise<{ page?: string }>;
@@ -97,8 +132,8 @@ export default async function WorksPage({ searchParams }: PageProps) {
                                     key={p}
                                     href={`/works?page=${p}`}
                                     className={`px-4 py-2 rounded-lg border transition-colors ${p === currentPage
-                                            ? 'bg-pink-600 border-pink-500 text-white'
-                                            : 'bg-gray-800 border-gray-700 text-gray-300 hover:text-white hover:border-pink-500/50'
+                                        ? 'bg-pink-600 border-pink-500 text-white'
+                                        : 'bg-gray-800 border-gray-700 text-gray-300 hover:text-white hover:border-pink-500/50'
                                         }`}
                                 >
                                     {p}

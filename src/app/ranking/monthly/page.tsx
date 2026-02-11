@@ -7,10 +7,46 @@ import type { Metadata } from 'next';
 export const dynamic = 'force-dynamic';
 
 
-export const metadata: Metadata = {
-    title: '月間ランキング - お尻マニア',
-    description: '月間人気作品ランキング',
-};
+export async function generateMetadata(): Promise<Metadata> {
+    const latestRanking = await prisma.ranking.findFirst({
+        where: { periodType: 'monthly' },
+        orderBy: { periodStart: 'desc' },
+        include: { work: true }, // サムネイル取得用
+    });
+
+    const title = '月間ランキング - お尻マニア';
+    const description = '月間人気作品ランキング。今月もっとも注目されているお尻作品をチェック！';
+
+    let ogImageUrl = latestRanking?.work?.thumbnailUrl;
+
+    // DMM画像高画質化 & パラメータ除去
+    if (ogImageUrl && ogImageUrl.includes('dmm.co.jp')) {
+        try {
+            const urlObj = new URL(ogImageUrl);
+            urlObj.search = '';
+            ogImageUrl = urlObj.toString();
+            if (ogImageUrl.endsWith('ps.jpg')) {
+                ogImageUrl = ogImageUrl.replace('ps.jpg', 'pl.jpg');
+            }
+        } catch { }
+    }
+
+    return {
+        title,
+        description,
+        openGraph: {
+            title,
+            description,
+            images: ogImageUrl ? [ogImageUrl] : [],
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            images: ogImageUrl ? [ogImageUrl] : [],
+        },
+    };
+}
 
 async function getMonthlyRankings() {
     const latestRanking = await prisma.ranking.findFirst({
