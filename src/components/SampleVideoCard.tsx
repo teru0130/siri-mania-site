@@ -38,7 +38,7 @@ export default function SampleVideoCard({ video }: SampleVideoCardProps) {
                             <img
                                 src={video.thumbnailUrl}
                                 alt={video.title}
-                                className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                             />
                         )}
 

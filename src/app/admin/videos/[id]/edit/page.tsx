@@ -181,6 +181,8 @@ export default function EditVideoPage() {
                             />
                             <p className="mt-2 text-xs text-gray-500">
                                 一覧表示用のサムネイル画像があればURLを入力してください（任意）。
+                                <br />
+                                <span className="text-yellow-500">※ 高画質（1280x720以上推奨）の画像を使用してください。画質が低いとぼやけて表示されます。</span>
                             </p>
                             {formData.thumbnailUrl && (
                                 <div className="mt-2 w-48 aspect-video rounded-lg overflow-hidden border border-gray-700 bg-black">
