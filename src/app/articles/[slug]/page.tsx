@@ -24,9 +24,39 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         return { title: '記事が見つかりません - お尻マニア' };
     }
 
+    const title = `${article.title} - お尻マニア`;
+    const description = article.excerpt || article.title;
+    const url = `https://siri-mania-site.vercel.app/articles/${article.slug}`;
+
     return {
-        title: `${article.title} - お尻マニア`,
-        description: article.excerpt || article.title,
+        title,
+        description,
+        openGraph: {
+            title,
+            description,
+            url,
+            siteName: 'お尻マニア',
+            type: 'article',
+            locale: 'ja_JP',
+            ...(article.thumbnailUrl && {
+                images: [
+                    {
+                        url: article.thumbnailUrl,
+                        width: 1200,
+                        height: 630,
+                        alt: article.title,
+                    },
+                ],
+            }),
+        },
+        twitter: {
+            card: article.thumbnailUrl ? 'summary_large_image' : 'summary',
+            title,
+            description,
+            ...(article.thumbnailUrl && {
+                images: [article.thumbnailUrl],
+            }),
+        },
     };
 }
 
