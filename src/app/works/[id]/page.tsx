@@ -91,8 +91,68 @@ export default async function WorkDetailPage({ params }: PageProps) {
 
     const highResThumbnail = getHighResImageUrl(work.thumbnailUrl);
 
+    // 構造化データ (Product & Breadcrumb)
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@graph': [
+            {
+                '@type': 'BreadcrumbList',
+                'itemListElement': [
+                    {
+                        '@type': 'ListItem',
+                        'position': 1,
+                        'name': 'ホーム',
+                        'item': 'https://siri-mania-site.vercel.app'
+                    },
+                    {
+                        '@type': 'ListItem',
+                        'position': 2,
+                        'name': '作品一覧',
+                        'item': 'https://siri-mania-site.vercel.app/works'
+                    },
+                    {
+                        '@type': 'ListItem',
+                        'position': 3,
+                        'name': work.title,
+                        'item': `https://siri-mania-site.vercel.app/works/${work.id}`
+                    }
+                ]
+            },
+            {
+                '@type': 'Product',
+                'name': work.title,
+                'image': highResThumbnail ? [highResThumbnail] : [],
+                'description': work.description || `${work.title}の詳細情報。`,
+                'brand': {
+                    '@type': 'Brand',
+                    'name': work.makerName || 'Unknown'
+                },
+                'offers': {
+                    '@type': 'Offer',
+                    'url': work.affiliateUrl,
+                    'availability': 'https://schema.org/InStock',
+                    'price': '0',
+                    'priceCurrency': 'JPY'
+                },
+                ...(work.metrics && {
+                    'aggregateRating': {
+                        '@type': 'AggregateRating',
+                        'ratingValue': work.metrics.overallPickScore,
+                        'bestRating': '10',
+                        'worstRating': '0',
+                        'ratingCount': 1 // ID的に1以上ある体裁
+                    }
+                })
+            }
+        ]
+    };
+
     return (
         <div className="container mx-auto px-4 py-8">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             {/* Back Link */}
             <Link
                 href="/"

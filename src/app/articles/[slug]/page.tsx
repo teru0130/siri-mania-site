@@ -232,8 +232,52 @@ export default async function ArticleDetailPage({ params }: PageProps) {
         orderBy: { publishedAt: 'desc' },
     });
 
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@graph': [
+            {
+                '@type': 'BreadcrumbList',
+                'itemListElement': [
+                    {
+                        '@type': 'ListItem',
+                        'position': 1,
+                        'name': 'ホーム',
+                        'item': 'https://siri-mania-site.vercel.app'
+                    },
+                    {
+                        '@type': 'ListItem',
+                        'position': 2,
+                        'name': '記事一覧',
+                        'item': 'https://siri-mania-site.vercel.app/articles'
+                    },
+                    {
+                        '@type': 'ListItem',
+                        'position': 3,
+                        'name': article.title,
+                        'item': `https://siri-mania-site.vercel.app/articles/${article.slug}`
+                    }
+                ]
+            },
+            {
+                '@type': 'Article',
+                'headline': article.title,
+                'image': article.thumbnailUrl ? [article.thumbnailUrl] : [],
+                'datePublished': article.publishedAt,
+                'dateModified': article.updatedAt,
+                'author': {
+                    '@type': 'Organization',
+                    'name': 'お尻マニア'
+                }
+            }
+        ]
+    };
+
     return (
         <div className="container mx-auto px-4 py-8">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             {/* Back link */}
             <Link
                 href="/articles"
