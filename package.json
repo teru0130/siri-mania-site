@@ -10,6 +10,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@next/third-parties": "^16.1.6",
     "@prisma/client": "^6.9.0",
     "@types/bcryptjs": "^2.4.6",
     "bcryptjs": "^3.0.3",
@@ -25,7 +26,6 @@
     "seed": "npx tsx prisma/seed.ts"
   },
   "devDependencies": {
-    "tsx": "^4.7.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -33,6 +33,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
+    "tsx": "^4.7.0",
     "typescript": "^5"
   }
 }
