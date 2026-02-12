@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { FileText, Calendar, ArrowRight } from 'lucide-react';
+import { FileText, Calendar, ArrowRight, ArrowLeft } from 'lucide-react';
 import prisma from '@/lib/prisma';
+import Pagination from '@/components/ui/Pagination';
+import SortSelect from '@/components/ui/SortSelect';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -11,11 +13,32 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default async function ArticlesPage() {
-    const articles = await prisma.article.findMany({
-        where: { isPublished: true },
-        orderBy: { publishedAt: 'desc' },
-    });
+const ITEMS_PER_PAGE = 12;
+
+interface PageProps {
+    searchParams: Promise<{ page?: string; sort?: string }>;
+}
+
+export default async function ArticlesPage({ searchParams }: PageProps) {
+    const { page, sort } = await searchParams;
+    const currentPage = Math.max(1, parseInt(page || '1'));
+    const currentSort = sort || 'newest';
+
+    const orderBy: any = currentSort === 'oldest'
+        ? { publishedAt: 'asc' }
+        : { publishedAt: 'desc' };
+
+    const [articles, totalCount] = await Promise.all([
+        prisma.article.findMany({
+            where: { isPublished: true },
+            orderBy,
+            skip: (currentPage - 1) * ITEMS_PER_PAGE,
+            take: ITEMS_PER_PAGE,
+        }),
+        prisma.article.count({ where: { isPublished: true } }),
+    ]);
+
+    const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
     const formatDate = (date: Date | null) => {
         if (!date) return '';
@@ -26,15 +49,30 @@ export default async function ArticlesPage() {
         });
     };
 
+    const sortOptions = [
+        { value: 'newest', label: '新しい順' },
+        { value: 'oldest', label: '古い順' },
+    ];
+
     return (
         <div className="container mx-auto px-4 py-8">
             {/* Header */}
-            <div className="mb-8">
-                <div className="flex items-center gap-3 mb-2">
-                    <FileText className="h-8 w-8 text-pink-500" />
-                    <h1 className="text-3xl font-bold text-white">記事</h1>
+            <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <Link
+                        href="/"
+                        className="inline-flex items-center gap-2 text-gray-400 hover:text-pink-400 transition-colors mb-4"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                        トップに戻る
+                    </Link>
+                    <div className="flex items-center gap-3 mb-2">
+                        <FileText className="h-8 w-8 text-pink-500" />
+                        <h1 className="text-3xl font-bold text-white">記事</h1>
+                    </div>
+                    <p className="text-gray-400">お尻・ヒップに関する情報やおすすめ作品の紹介記事 (全{totalCount}件)</p>
                 </div>
-                <p className="text-gray-400">お尻・ヒップに関する情報やおすすめ作品の紹介記事</p>
+                <SortSelect options={sortOptions} />
             </div>
 
             {/* Articles Grid */}
@@ -92,6 +130,8 @@ export default async function ArticlesPage() {
                     ))}
                 </div>
             )}
+
+            <Pagination currentPage={currentPage} totalPages={totalPages} />
         </div>
     );
 }
