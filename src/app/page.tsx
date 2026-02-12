@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { TrendingUp, Sparkles, Tag, BookOpen, ArrowRight, Star, Flame, FileText } from 'lucide-react';
+import { TrendingUp, Sparkles, Tag, BookOpen, ArrowRight, Flame, FileText } from 'lucide-react';
 import prisma from '@/lib/prisma';
 import WorkCard from '@/components/WorkCard';
 
@@ -19,20 +19,6 @@ async function getHomeData() {
       take: 8,
     });
 
-    // 高スコア作品
-    const topRatedWorks = await prisma.work.findMany({
-      where: {
-        isPublished: true,
-        metrics: { overallPickScore: { gte: 7 } }
-      },
-      include: {
-        tags: { include: { tag: true } },
-        metrics: true,
-      },
-      orderBy: { metrics: { overallPickScore: 'desc' } },
-      take: 4,
-    });
-
     // タグ一覧
     const tags = await prisma.tag.findMany({
       include: {
@@ -46,15 +32,15 @@ async function getHomeData() {
     const totalWorks = await prisma.work.count({ where: { isPublished: true } });
     const totalTags = await prisma.tag.count();
 
-    return { latestWorks, topRatedWorks, tags, stats: { totalWorks, totalTags } };
+    return { latestWorks, tags, stats: { totalWorks, totalTags } };
   } catch (error) {
     console.error('Failed to fetch home data:', error);
-    return { latestWorks: [], topRatedWorks: [], tags: [], stats: { totalWorks: 0, totalTags: 0 } };
+    return { latestWorks: [], tags: [], stats: { totalWorks: 0, totalTags: 0 } };
   }
 }
 
 export default async function HomePage() {
-  const { latestWorks, topRatedWorks, tags, stats } = await getHomeData();
+  const { latestWorks, tags, stats } = await getHomeData();
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -99,31 +85,6 @@ export default async function HomePage() {
           </Link>
         </div>
       </section>
-
-      {/* Top Rated */}
-      {topRatedWorks.length > 0 && (
-        <section className="mb-12">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-yellow-400 to-orange-500">
-                <Star className="h-5 w-5 text-black" />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-white">高評価作品</h2>
-                <p className="text-sm text-gray-400">総合スコア7.0以上</p>
-              </div>
-            </div>
-            <Link href="/compare" className="flex items-center gap-1 text-sm text-pink-400 hover:text-pink-300">
-              すべて見る <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {topRatedWorks.map((work) => (
-              <WorkCard key={work.id} work={work as never} />
-            ))}
-          </div>
-        </section>
-      )}
 
       {/* Latest Works */}
       <section className="mb-12">
