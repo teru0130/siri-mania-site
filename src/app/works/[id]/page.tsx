@@ -15,15 +15,41 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const { id } = await params;
     const work = await prisma.work.findUnique({
         where: { id: parseInt(id), isPublished: true },
+        include: { metrics: true },
     });
 
     if (!work) {
         return { title: '作品が見つかりません - お尻マニア' };
     }
 
+    // メタディスクリプションの生成
+    const score = work.metrics?.overallPickScore?.toFixed(1);
+    const actresses = Array.isArray(work.actresses) ? (work.actresses as string[]).join(', ') : '';
+    const maker = work.makerName;
+
+    let metaDesc = `【お尻マニア評価:${score || '-'}点】`;
+    if (maker) metaDesc += ` ${maker}`;
+    if (actresses) metaDesc += ` 出演:${actresses}`;
+
+    if (work.description) {
+        // 説明文を独自の長さに切り詰める
+        const cleanDesc = work.description.replace(/\n/g, ' ').slice(0, 120);
+        metaDesc += ` - ${cleanDesc}...`;
+    } else {
+        metaDesc += ` - ${work.title}の詳細レビュー、スコア評価、見どころを掲載。お尻特化の視点で徹底解説します。`;
+    }
+
     return {
         title: `${work.title} - お尻マニア`,
-        description: work.description || `${work.title}のスコア詳細・比較情報`,
+        description: metaDesc,
+        openGraph: {
+            title: `${work.title} - お尻マニア`,
+            description: metaDesc,
+        },
+        twitter: {
+            title: `${work.title} - お尻マニア`,
+            description: metaDesc,
+        },
     };
 }
 
@@ -187,7 +213,7 @@ export default async function WorkDetailPage({ params }: PageProps) {
                     <a
                         href={work.affiliateUrl}
                         target="_blank"
-                        rel="noopener noreferrer"
+                        rel="noopener noreferrer nofollow sponsored"
                         className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-pink-500 to-rose-600 px-6 py-4 text-lg font-bold text-white hover:from-pink-600 hover:to-rose-700 transition-all shadow-lg shadow-pink-500/25"
                     >
                         <span>公式サイトで詳細を見る</span>

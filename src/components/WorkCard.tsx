@@ -137,7 +137,7 @@ export default function WorkCard({ work, showRank, size = 'medium' }: WorkCardPr
                 <a
                     href={work.affiliateUrl}
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noopener noreferrer nofollow sponsored"
                     onClick={handleClick}
                     className="btn-glow flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-pink-500 to-rose-600 px-4 py-2.5 text-sm font-semibold text-white"
                 >
