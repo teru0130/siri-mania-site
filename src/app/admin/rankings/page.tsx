@@ -1,9 +1,9 @@
-import { TrendingUp, RefreshCw } from 'lucide-react';
+import { TrendingUp } from 'lucide-react';
 import prisma from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
+import RankingRecalculateButton from '@/components/admin/RankingRecalculateButton';
 
 async function getRankingStats() {
     const weeklyCount = await prisma.ranking.count({ where: { periodType: 'weekly' } });
@@ -42,10 +42,7 @@ export default async function AdminRankingsPage() {
                     </h1>
                     <p className="text-gray-400">ランキング状況</p>
                 </div>
-                <button className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-pink-500 to-rose-600 px-4 py-2 text-sm font-semibold text-white hover:from-pink-600 hover:to-rose-700">
-                    <RefreshCw className="h-4 w-4" />
-                    再計算実行
-                </button>
+                <RankingRecalculateButton />
             </div>
 
             {/* Stats */}
