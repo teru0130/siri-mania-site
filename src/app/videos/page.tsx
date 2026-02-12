@@ -65,8 +65,68 @@ async function getVideos() {
 export default async function VideosPage() {
     const videos = await getVideos();
 
+    // 構造化データの生成
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@graph': [
+            {
+                '@type': 'BreadcrumbList',
+                'itemListElement': [
+                    {
+                        '@type': 'ListItem',
+                        'position': 1,
+                        'name': 'ホーム',
+                        'item': 'https://siri-mania-site.vercel.app'
+                    },
+                    {
+                        '@type': 'ListItem',
+                        'position': 2,
+                        'name': 'サンプル動画一覧',
+                        'item': 'https://siri-mania-site.vercel.app/videos'
+                    }
+                ]
+            },
+            {
+                '@type': 'ItemList',
+                'itemListElement': videos.map((video, index) => {
+                    // DMM画像高画質化
+                    let thumb = video.thumbnailUrl;
+                    if (thumb && thumb.includes('dmm.co.jp')) {
+                        try {
+                            const urlObj = new URL(thumb);
+                            urlObj.search = '';
+                            thumb = urlObj.toString();
+                            if (thumb.endsWith('ps.jpg')) thumb = thumb.replace('ps.jpg', 'pl.jpg');
+                        } catch { }
+                    }
+
+                    // iframe src抽出
+                    const srcMatch = video.embedCode.match(/src="([^"]+)"/);
+                    const embedUrl = srcMatch ? srcMatch[1] : '';
+
+                    return {
+                        '@type': 'ListItem',
+                        'position': index + 1,
+                        'item': {
+                            '@type': 'VideoObject',
+                            'name': video.title,
+                            'description': video.description || video.title,
+                            'thumbnailUrl': thumb ? [thumb] : [],
+                            'uploadDate': video.createdAt.toISOString(),
+                            'embedUrl': embedUrl
+                        }
+                    };
+                })
+            }
+        ]
+    };
+
     return (
         <div className="container mx-auto px-4 py-8">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             {/* Header */}
             <div className="mb-8">
                 <Link
